@@ -6,7 +6,6 @@ Graph Neural Network (GNNs) library and tools for GoMLX
 >
 > **Contributions are most welcome**. 🚧
 
-## What is in it ?
+## What is in it?
 
-* VNN layer: it implements the Vector Neuron Networks operators described in [arxiv.org/abs/2104.12229](https://arxiv.org/abs/2104.12229)
- 
+
