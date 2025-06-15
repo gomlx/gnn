@@ -1,5 +1,6 @@
-# gnn
-Graph Neural Network (GNNs) library and tools for GoMLX
+# GNN, Graph Neural Network (GNNs) library and tools for GoMLX
+
+[![GoDev](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white)](https://pkg.go.dev/github.com/gomlx/gnn?tab=doc)
 
 > [!Note]
 > 🚧 EXPERIMENTAL and IN DEVELOPMENT: It's no where near from a complete GNN library (like [PyTorch Geometric](https://pytorch-geometric.readthedocs.io/), [TensorFlow GNN](https://github.com/tensorflow/gnn) and others. It's being populated and the need arises.
