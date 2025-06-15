@@ -11,6 +11,6 @@ Graph Neural Network (GNNs) library and tools for GoMLX
 * `geometry.RadiusEdges`: returns edges between the source and target points that are within a give radius.
   It works for arbitrary dimensions (2D, 3D, etc.).
 
-[//]: # (* `geometry.NearestEdges`: returns the edges between each source point and its closest target point.)
-[//]: # (  It works for arbitrary dimensions &#40;2D, 3D, etc.&#41;.)
+* `geometry.NearestEdges`: returns the edges between each source point and its closest target point.
+  It works for arbitrary dimensions (2D, 3D, etc.).
 [//]: # (* `graph.EdgesUnion`: returns the union from a list of edge sets. The edges are sorted in the process.)
