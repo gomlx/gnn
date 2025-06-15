@@ -2,6 +2,7 @@ package geometry
 
 import (
 	"fmt"
+	"math"
 	"math/rand/v2"
 	"testing"
 
@@ -73,5 +74,48 @@ func TestRadiusEdges(t *testing.T) {
 
 	require.Equal(t, pairsCount, len(edgesSourceIndices),
 		"Number of edges should match number of point pairs within radius distance")
+}
 
+func makeGridPoints(n int) [][]float32 {
+	points := make([][]float32, n*n*n)
+	idx := 0
+	for x := 0; x < n; x++ {
+		for y := 0; y < n; y++ {
+			for z := 0; z < n; z++ {
+				// Convert from [0,n-1] to [-1,1] range
+				points[idx] = []float32{
+					2*float32(x)/float32(n-1) - 1,
+					2*float32(y)/float32(n-1) - 1,
+					2*float32(z)/float32(n-1) - 1,
+				}
+				idx++
+			}
+		}
+	}
+	return points
+}
+
+func BenchmarkRadiusEdges(b *testing.B) {
+	// Setup source points
+	numSourcePoints := 100_000
+	sourcePointsT := tensors.FromShape(shapes.Make(dtypes.Float32, numSourcePoints, 3))
+	tensors.MutableFlatData(sourcePointsT, func(flat []float32) {
+		rng := rand.New(rand.NewPCG(0, 42))
+		for i := range flat {
+			flat[i] = 2*rng.Float32() - 1
+		}
+	})
+
+	// Setup target points as 32x32x32 grid
+	gridSize := 32
+	targetPointsT := tensors.FromValue(makeGridPoints(gridSize))
+
+	const radius = math.Sqrt2 * 1.0 / 32
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := RadiusEdges(sourcePointsT, targetPointsT, radius).Done()
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
 }

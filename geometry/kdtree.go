@@ -91,7 +91,7 @@ func NewKDTree[T KDTreePointType](pointsData []T, dimension int, minPointsPerLea
 	if len(pointsData) == 0 {
 		return nil, errors.Errorf("NewKDTree with empty pointsData")
 	}
-	fmt.Printf("NewKDTree[%T](dimension=%d, minPointsPerLeaf=%d)\n", pointsData[0], dimension, minPointsPerLeaf)
+	//fmt.Printf("NewKDTree[%T](dimension=%d, minPointsPerLeaf=%d)\n", pointsData[0], dimension, minPointsPerLeaf)
 	if dimension <= 0 {
 		return nil, errors.Errorf("number of dimensions (dimension) must be positive")
 	}

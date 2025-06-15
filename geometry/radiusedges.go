@@ -115,11 +115,11 @@ func radiusEdgesImpl[T KDTreePointType](c *RadiusEdgesConfig, source, target []T
 	for i := range targetIndices {
 		targetIndices[i] = int32(i)
 	}
-	edgesSource, edgesTarget = radiusEdgesRecursiveImpl(kd, kd.Root, target, targetIndices, dimension, radius, edgesSource, edgesTarget)
+	edgesSource, edgesTarget = radiusEdgesRecursiveImpl(kd, kd.Root, target, targetIndices, dimension, radius, radius*radius, edgesSource, edgesTarget)
 	return
 }
 
-func radiusEdgesRecursiveImpl[T KDTreePointType](kd *KDTree[T], kdNode *KDTreeNode[T], target []T, targetIndices []int32, dimension int, radius T, edgesSource, edgesTarget []int32) ([]int32, []int32) {
+func radiusEdgesRecursiveImpl[T KDTreePointType](kd *KDTree[T], kdNode *KDTreeNode[T], target []T, targetIndices []int32, dimension int, radius, radius2 T, edgesSource, edgesTarget []int32) ([]int32, []int32) {
 	numTargetPoints := len(targetIndices) // == len(target) / dimension
 
 	// Trim target to only those that fit the bounding-box.
@@ -127,7 +127,7 @@ func radiusEdgesRecursiveImpl[T KDTreePointType](kd *KDTree[T], kdNode *KDTreeNo
 	remainingTargetIndices := make([]int32, 0, len(targetIndices))
 	for targetPointIdx := range numTargetPoints {
 		point := target[targetPointIdx*dimension : (targetPointIdx+1)*dimension]
-		if radiusIntersectWithBoundingBox(point, kdNode.Max, kdNode.Min, dimension, radius) {
+		if radiusIntersectWithBoundingBox(point, kdNode.Max, kdNode.Min, dimension, radius, radius2) {
 			remainingTarget = append(remainingTarget, point...)
 			remainingTargetIndices = append(remainingTargetIndices, targetIndices[targetPointIdx])
 		}
@@ -149,8 +149,8 @@ func radiusEdgesRecursiveImpl[T KDTreePointType](kd *KDTree[T], kdNode *KDTreeNo
 			for targetPointIdx := range numTargetPoints {
 				sourceFlatIdx := sourcePointIdx * dimension
 				targetFlatIdx := targetPointIdx * dimension
-				dist := l2Dist(kd.Points[sourceFlatIdx:sourceFlatIdx+dimension], target[targetFlatIdx:targetFlatIdx+dimension])
-				if dist < radius {
+				dist2 := l2Dist2(kd.Points[sourceFlatIdx:sourceFlatIdx+dimension], target[targetFlatIdx:targetFlatIdx+dimension])
+				if dist2 <= radius2 {
 					edgesSource = append(edgesSource, int32(kd.Order[sourcePointIdx]))
 					edgesTarget = append(edgesTarget, targetIndices[targetPointIdx])
 				}
@@ -160,8 +160,8 @@ func radiusEdgesRecursiveImpl[T KDTreePointType](kd *KDTree[T], kdNode *KDTreeNo
 	}
 
 	// Recurse to left and right:
-	edgesSource, edgesTarget = radiusEdgesRecursiveImpl(kd, kdNode.Left, target, targetIndices, dimension, radius, edgesSource, edgesTarget)
-	edgesSource, edgesTarget = radiusEdgesRecursiveImpl(kd, kdNode.Right, target, targetIndices, dimension, radius, edgesSource, edgesTarget)
+	edgesSource, edgesTarget = radiusEdgesRecursiveImpl(kd, kdNode.Left, target, targetIndices, dimension, radius, radius2, edgesSource, edgesTarget)
+	edgesSource, edgesTarget = radiusEdgesRecursiveImpl(kd, kdNode.Right, target, targetIndices, dimension, radius, radius2, edgesSource, edgesTarget)
 	return edgesSource, edgesTarget
 }
 
@@ -178,8 +178,7 @@ func l2Dist[T KDTreePointType](a, b []T) T {
 	return T(math.Sqrt(float64(l2Dist2(a, b))))
 }
 
-func radiusIntersectWithBoundingBox[T KDTreePointType](point []T, boundaryMax, boundaryMin []T, dimension int, radius T) bool {
-	radius2 := radius * radius
+func radiusIntersectWithBoundingBox[T KDTreePointType](point []T, boundaryMax, boundaryMin []T, dimension int, radius, radius2 T) bool {
 	closestPoint := make([]T, dimension)
 	for axis := range dimension {
 		pAxis := point[axis]
