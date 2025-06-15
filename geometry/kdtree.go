@@ -71,6 +71,11 @@ func (tree *KDTree[T]) NumPointsForNode(node *KDTreeNode[T]) int {
 	return node.EndIdx - node.StartIdx
 }
 
+// IsLeaf node.
+func (node *KDTreeNode[T]) IsLeaf() bool {
+	return node.Left == nil && node.Right == nil
+}
+
 // NewKDTree builds a K-d tree from a flat slice of point values.
 // The splits are chosen on the axis with the largest range, and they take the median point for the axis
 // to keep the generated tree approximately balanced.
