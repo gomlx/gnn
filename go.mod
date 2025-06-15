@@ -1,4 +1,4 @@
-module gnn
+module github.com/gomlx/gnn
 
 go 1.24
 
