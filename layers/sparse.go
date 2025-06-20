@@ -41,11 +41,23 @@ func SparseSoftmax(logits, logitsMask, indices *Node, maxIndex int, sorted bool)
 	if !logits.DType().IsFloat() {
 		exceptions.Panicf("invalid logits dtype %s, it must be float", logits.DType())
 	}
+	if logits.Rank() != 1 {
+		exceptions.Panicf("invalid logits rank, it must be 1, got shape %s", logits.Shape())
+	}
+	n := logits.Shape().Dim(0)
 	if !indices.DType().IsInt() {
 		exceptions.Panicf("invalid indices dtype %s, it must be an int or uint", indices.DType())
 	}
-	if logitsMask != nil && logitsMask.DType() != dtypes.Bool {
-		exceptions.Panicf("invalid logitsMask dtype %s, if set it must be a bool", indices.DType())
+	if indices.Shape().CheckDims(n, 1) != nil {
+		exceptions.Panicf("indices must be shaped [n=%d, 1], got shape %s", n, indices.Shape())
+	}
+	if logitsMask != nil {
+		if logitsMask.DType() != dtypes.Bool {
+			exceptions.Panicf("invalid logitsMask dtype %s, if set it must be a bool", indices.DType())
+		}
+		if logits.Shape().CheckDims(n) != nil {
+			exceptions.Panicf("logitsMask must be shapes [n=%d], got shape %s", n, indices.Shape())
+		}
 	}
 
 	g := logits.Graph()
