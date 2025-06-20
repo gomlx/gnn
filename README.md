@@ -15,3 +15,4 @@
   It works for arbitrary dimensions (2D, 3D, etc.).
 * `graph.UnionEdges`: returns the union from a list of edge sets.
 * `graph.SortEdgesBySource`: sort edges by source id. 
+* `layers.SparseSoftmax`: calculating a Softmax on a sparse vector (typically index by some set of edge indices).
