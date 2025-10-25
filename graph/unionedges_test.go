@@ -3,7 +3,7 @@ package graph
 import (
 	"testing"
 
-	"github.com/gomlx/gomlx/types/tensors"
+	"github.com/gomlx/gomlx/pkg/core/tensors"
 	"github.com/stretchr/testify/require"
 )
 
